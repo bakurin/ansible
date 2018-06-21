@@ -1,6 +1,6 @@
 FROM alpine:3.7
 
-RUN apk --update --no-cache add ansible openssh-client rsync && \
+RUN apk --update --no-cache add ansible openssh-client rsync sshpass py-netaddr && \
     rm -rf /var/cache/apk/* && \
     mkdir -p /etc/ansible && \
     echo 'localhost' > /etc/ansible/hosts
