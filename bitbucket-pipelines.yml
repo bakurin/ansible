@@ -1,0 +1,19 @@
+pipelines:
+  tags:
+    'v*':
+      - step:
+          name: Build docker image and push to AWS ECR
+          image: atlassian/default-image:2
+          deployment: Production
+          services:
+            - docker
+          caches:
+            - docker
+          script:
+            - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            - unzip awscliv2.zip
+            - bash ./aws/install
+            - aws --version
+            - aws ecr get-login-password | docker login --username AWS --password-stdin "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com"
+            - docker build -t "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/payyo/deployer:$BITBUCKET_TAG" .
+            - docker push "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/payyo/deployer:$BITBUCKET_TAG"
